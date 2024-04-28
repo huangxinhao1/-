@@ -1,0 +1,134 @@
+#include <stdio.h>
+#include <string.h>
+#include<iostream>
+using namespace std;
+#define  Maxsize  100
+
+//栈定义与实现
+typedef struct SqStack {
+    char  elem[Maxsize];
+    int  top; //栈顶指针
+} SqStack;
+
+void InitStack(SqStack* S) {//构造一个空栈
+    S->top = 0;
+}
+
+int StackFull(SqStack* S) 
+{
+    if (S->top == Maxsize - 1)   return 1;
+    else   return 0;
+}
+
+int StackEmpty(SqStack* S) {
+    if (S->top == 0)   return 1;
+    else   return 0;
+}
+
+void GetTop(SqStack* S, char* e)
+{
+    if (StackEmpty(S)) return;//下溢出
+    else
+    {
+        *e=S->elem[S->top];
+    }
+}
+
+void Push(SqStack* S, char e)
+{
+    if (StackFull(S)) return;//上溢出
+    else
+    {
+        S->top++;
+        S->elem[S->top] = e;
+    }
+}
+void Pop(SqStack* S, char* e)
+{
+    if (StackEmpty(S)) return;//下溢出
+    else
+    {
+        *e = S->elem[S->top];
+        S->top--;
+    }
+}
+
+void matching(char* exp)
+{
+    SqStack S; int state;
+
+
+    state = 1;
+    char e = ' ';
+    InitStack(&S);
+    int i = 0;
+
+    while (i < strlen(exp) && state == 1)
+    {
+
+        switch (*(exp + i))
+        {
+
+        case '{':
+            Push(&S, *(exp + i)); i++;  break;
+
+        case '[':
+            Push(&S, *(exp + i)); i++;  break;
+
+        case '(':
+            Push(&S, *(exp + i)); i++;  break;
+
+        case '}':
+            GetTop(&S, &e);
+            if (!StackEmpty(&S) && e == '{') { Pop(&S, &e);  i++; }
+            else { state = 0; }
+            break;
+
+        case ']':
+            GetTop(&S, &e);
+            if (!StackEmpty(&S) && e == '[') { Pop(&S, &e);  i++; }
+            else { state = 0; }
+            break;
+
+        case ')':
+            GetTop(&S, &e);
+            if (!StackEmpty(&S) && e == '(') { Pop(&S, &e);  i++; }
+            else { state = 0; }
+            break;
+        default:
+            i++;
+        }
+    }
+
+
+    if (StackEmpty(&S) && state)
+        printf("OK\n");
+    else printf("ERROR\n");
+}
+
+void menu()
+{
+    cout << "                                  ********************************************************************" << endl;
+    cout << "                                  ********************************************************************" << endl;
+    cout << "                                  **                   欢迎使用自动括号匹配                         **" << endl;
+    cout << "                                  ********************************************************************" << endl;
+    cout << "                                  ********************************************************************" << endl;
+
+}
+int main()
+{
+    char exp[Maxsize];
+    char ch = 1;
+    menu();
+    while (ch != '=')
+    {
+        cout << "请输入表达式:";
+        scanf("%s", exp);
+        matching(exp);
+        cout << "请输入是否继续(=结束):";
+        cin >> ch;
+
+    }
+    return 1;
+}
+
